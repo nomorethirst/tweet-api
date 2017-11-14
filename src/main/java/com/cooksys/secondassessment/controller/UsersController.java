@@ -40,7 +40,7 @@ public class UsersController {
 			System.out.println("userService = " + userService);
 			return userService.createUser(dto);
 		} catch (AlreadyExistsException e) {
-			response.sendError(e.STATUS_CODE, e.getMessage());
+			response.sendError(e.STATUS_CODE, e.responseMessage);
 			return null;
 		}
 	}
@@ -50,7 +50,7 @@ public class UsersController {
 		try {
 			return userService.getUserByUsername(username);
 		} catch (NotExistsException e) {
-			response.sendError(e.STATUS_CODE, e.getMessage());
+			response.sendError(e.STATUS_CODE, e.responseMessage);
 			return null;
 		}
 		

@@ -6,16 +6,16 @@ import javax.servlet.http.HttpServletResponse;
 public class NotExistsException extends Exception {
 
 	public final int STATUS_CODE = HttpServletResponse.SC_BAD_REQUEST;
-	private String message;
+	public String responseMessage;
 	
 	public NotExistsException(String message) {
 		super();
-		this.message = message;
+		this.responseMessage = message;
 	}
 
 	@Override
 	public String toString() {
-		return "NotExistsException [message=" + message + "]";
+		return "NotExistsException [message=" + responseMessage + "]";
 	}
 
 }

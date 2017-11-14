@@ -6,16 +6,16 @@ import javax.servlet.http.HttpServletResponse;
 public class AlreadyExistsException extends Exception {
 
 	public final int STATUS_CODE = HttpServletResponse.SC_BAD_REQUEST;
-	private String message;
+	public String responseMessage;
 	
 	public AlreadyExistsException(String message) {
 		super();
-		this.message = message;
+		this.responseMessage = message;
 	}
 
 	@Override
 	public String toString() {
-		return "AlreadyExistsException [message=" + message + "]";
+		return "AlreadyExistsException [message=" + responseMessage + "]";
 	}
 
 }
