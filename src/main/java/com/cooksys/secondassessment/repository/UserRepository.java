@@ -1,19 +1,11 @@
 package com.cooksys.secondassessment.repository;
 
-import javax.persistence.EntityManager;
+import org.springframework.data.jpa.repository.JpaRepository;
 
-import org.springframework.stereotype.Repository;
+import com.cooksys.secondassessment.entity.User;
 
-@Repository
-public class UserRepository {
+public interface UserRepository extends JpaRepository<User, Integer> {
 	
-	private EntityManager entityManager;
-
-	public UserRepository(EntityManager entityManager) {
-		super();
-		this.entityManager = entityManager;
-	}
-	
-	
+	User findByUsername(String username);
 
 }

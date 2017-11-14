@@ -1,18 +1,10 @@
 package com.cooksys.secondassessment.repository;
 
-import javax.persistence.EntityManager;
+import org.springframework.data.jpa.repository.JpaRepository;
 
-import org.springframework.stereotype.Repository;
+import com.cooksys.secondassessment.entity.Credentials;
 
-@Repository
-public class CredentialsRepository {
-
-	private EntityManager entityManager;
-
-	public CredentialsRepository(EntityManager entityManager) {
-		super();
-		this.entityManager = entityManager;
-	}
+public interface CredentialsRepository extends JpaRepository<Credentials, Integer> {
 
 
 }

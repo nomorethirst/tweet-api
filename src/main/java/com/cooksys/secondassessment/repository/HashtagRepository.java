@@ -1,17 +1,10 @@
 package com.cooksys.secondassessment.repository;
 
-import javax.persistence.EntityManager;
+import org.springframework.data.jpa.repository.JpaRepository;
 
-import org.springframework.stereotype.Repository;
+import com.cooksys.secondassessment.entity.Hashtag;
 
-@Repository
-public class HashtagRepository {
+public interface HashtagRepository extends JpaRepository<Hashtag, Integer> {
 
-	private EntityManager entityManager;
-
-	public HashtagRepository(EntityManager entityManager) {
-		super();
-		this.entityManager = entityManager;
-	}
 
 }

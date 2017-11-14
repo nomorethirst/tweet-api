@@ -1,17 +1,10 @@
 package com.cooksys.secondassessment.repository;
 
-import javax.persistence.EntityManager;
+import org.springframework.data.jpa.repository.JpaRepository;
 
-import org.springframework.stereotype.Repository;
+import com.cooksys.secondassessment.entity.Tweet;
 
-@Repository
-public class TweetRepository {
+public interface TweetRepository extends JpaRepository<Tweet, Integer> {
 
-	private EntityManager entityManager;
-
-	public TweetRepository(EntityManager entityManager) {
-		super();
-		this.entityManager = entityManager;
-	}
 
 }

@@ -6,8 +6,6 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
-//import javax.persistence.Temporal;
-//import javax.persistence.TemporalType;
 import javax.persistence.Table;
 
 @Entity
@@ -23,8 +21,9 @@ public class User {
 	
 	private Profile profile;
 	
-	//@Temporal(TemporalType.TIMESTAMP)
 	private Timestamp joined;
+	
+	private Boolean deleted = false;
 	
 	public User() {
 	}
@@ -58,6 +57,14 @@ public class User {
 
 	public void setJoined(Timestamp joined) {
 		this.joined = joined;
+	}
+
+	public Boolean getDeleted() {
+		return deleted;
+	}
+
+	public void setDeleted(Boolean deleted) {
+		this.deleted = deleted;
 	}
 
 	@Override
