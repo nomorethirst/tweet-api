@@ -18,6 +18,10 @@ public class CredentialsService {
 	public void createCredentials(Credentials credentials) {
 		credentialsRepository.save(credentials);
 	}
-	
+
+	public boolean isValid(Credentials credentials) {
+		Credentials foundCredentials = credentialsRepository.findByUsername(credentials.getUsername());
+		return foundCredentials != null && foundCredentials.getPassword() == credentials.getPassword();
+	}
 
 }

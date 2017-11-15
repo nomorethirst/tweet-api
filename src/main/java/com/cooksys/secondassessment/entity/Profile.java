@@ -71,6 +71,13 @@ public class Profile {
 			return false;
 		return true;
 	}
+
+	@Override
+	public String toString() {
+		return "Profile [firstName=" + firstName + ", lastName=" + lastName + ", email=" + email + ", phone=" + phone
+				+ "]";
+	}
+	
 	
 	
 

@@ -6,6 +6,7 @@ import java.util.List;
 import javax.servlet.http.HttpServletResponse;
 
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -15,6 +16,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.cooksys.secondassessment.dto.CredentialsProfileDTO;
 import com.cooksys.secondassessment.dto.UserDTO;
 import com.cooksys.secondassessment.exceptions.AlreadyExistsException;
+import com.cooksys.secondassessment.exceptions.InvalidCredentialsException;
 import com.cooksys.secondassessment.exceptions.NotExistsException;
 import com.cooksys.secondassessment.service.UserService;
 
@@ -37,7 +39,6 @@ public class UsersController {
 	@PostMapping
 	public UserDTO createUser(@RequestBody CredentialsProfileDTO dto, HttpServletResponse response) throws IOException {
 		try {
-			System.out.println("userService = " + userService);
 			return userService.createUser(dto);
 		} catch (AlreadyExistsException e) {
 			response.sendError(e.STATUS_CODE, e.responseMessage);
@@ -45,7 +46,7 @@ public class UsersController {
 		}
 	}
 	
-	@GetMapping("users/@{username}")
+	@GetMapping("/@{username}")
 	public UserDTO getUser(@PathVariable String username, HttpServletResponse response) throws IOException {
 		try {
 			return userService.getUserByUsername(username);
@@ -53,8 +54,19 @@ public class UsersController {
 			response.sendError(e.STATUS_CODE, e.responseMessage);
 			return null;
 		}
-		
-		
+	}
+	
+	@PatchMapping("/@{username}")
+	public UserDTO patchUser(@RequestBody CredentialsProfileDTO dto, @PathVariable String username, HttpServletResponse response) throws IOException {
+		try {
+			return userService.saveUser(dto, username);
+		} catch (InvalidCredentialsException e) {
+			response.sendError(e.STATUS_CODE, e.responseMessage);
+			return null;
+		} catch (NotExistsException e) {
+			response.sendError(e.STATUS_CODE, e.responseMessage);
+			return null;
+		}
 	}
 
 }

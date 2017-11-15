@@ -8,8 +8,11 @@ import org.springframework.stereotype.Service;
 
 import com.cooksys.secondassessment.dto.CredentialsProfileDTO;
 import com.cooksys.secondassessment.dto.UserDTO;
+import com.cooksys.secondassessment.entity.Credentials;
+import com.cooksys.secondassessment.entity.Profile;
 import com.cooksys.secondassessment.entity.User;
 import com.cooksys.secondassessment.exceptions.AlreadyExistsException;
+import com.cooksys.secondassessment.exceptions.InvalidCredentialsException;
 import com.cooksys.secondassessment.exceptions.NotExistsException;
 import com.cooksys.secondassessment.mapper.UserMapper;
 import com.cooksys.secondassessment.repository.UserRepository;
@@ -68,6 +71,29 @@ public class UserService {
 		return userMapper.toDto(user);
 	}
 	
+	public UserDTO saveUser(CredentialsProfileDTO dto, String username) throws InvalidCredentialsException, NotExistsException {
+		Credentials credentials = dto.getCredentials();
+		Profile profile = dto.getProfile();
+		System.out.println(dto.toString());
+		System.out.println(username);
+		if (!credentials.getUsername().equals(username)) {
+			throw new InvalidCredentialsException(
+					String.format("username '%s' does not match credentials (username '%s').", username, credentials.getUsername()));
+		}
+		if (!credentialsService.isValid(credentials)) {
+			throw new InvalidCredentialsException(
+					String.format("Invalid credentials {username: %s, password: %s}.", credentials.getUsername(), credentials.getPassword()));
+		}
+		User user = userRepository.findByUsername(username);
+		if (user == null || user.getDeleted()) {
+			throw new NotExistsException(String.format("User '%s'does not exist or is deleted.", username));
+		}
+		System.out.println(user);
+		user = userRepository.save(user);
+		System.out.println(user);
+		
+		return userMapper.toDto(user);
+	}
 	
 
 }

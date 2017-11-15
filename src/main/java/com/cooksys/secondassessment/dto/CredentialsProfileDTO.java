@@ -24,6 +24,13 @@ public class CredentialsProfileDTO {
 	public void setProfile(Profile profile) {
 		this.profile = profile;
 	}
+
+	@Override
+	public String toString() {
+		return "CredentialsProfileDTO [credentials=" + credentials.toString() + ", profile=" + profile.toString() + "]";
+	}
+	
+	
 	
 	
 
