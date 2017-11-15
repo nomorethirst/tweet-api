@@ -28,7 +28,7 @@ public class User {
 	private Boolean deleted = false;
 	
 	@OneToMany
-	private List<User> followed;
+	private List<User> followers;
 	
 	@OneToMany
 	private List<User> following;
@@ -73,6 +73,30 @@ public class User {
 
 	public void setDeleted(Boolean deleted) {
 		this.deleted = deleted;
+	}
+	
+	public Integer getId() {
+	    return id;
+	}
+
+	public void setId(Integer id) {
+	    this.id = id;
+	}
+
+	public List<User> getFollowers() {
+	    return followers;
+	}
+
+	public void setFollowers(List<User> followed) {
+	    this.followers = followed;
+	}
+
+	public List<User> getFollowing() {
+	    return following;
+	}
+
+	public void setFollowing(List<User> following) {
+	    this.following = following;
 	}
 
 	@Override

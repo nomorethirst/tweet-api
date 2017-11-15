@@ -69,10 +69,8 @@ test() {
 credentials() {
 	cat <<EOF
 {
-  "credentials": {
     "username": "$username",
     "password": "$password"
-  }
 }
 EOF
 }
@@ -118,16 +116,45 @@ lastName=Jones
 phone=2345678901
 testHd credentials_profile
 
+username=john
+password=john1
+email=john@ex.com
+firstName=John
+lastName=Doe
+phone=3456789012
+testHd credentials_profile
+
 method=GET
-endpoint=/users/@bob
+endpoint=/users/@john
 test
 
 method=DELETE
-endpoint=/users/@bob
-username=bob
-password=bob1
 testHd credentials
 
 method=GET
 endpoint=/users
 test
+
+method=GET
+endpoint=/validate/username/exists/@bob
+test
+endpoint=/validate/username/available/@henry
+test
+
+method=POST
+endpoint=/users/@alice/follow
+username=bob
+password=bob1
+testHd credentials
+
+method=GET
+endpoint=/users/@bob/following
+test
+
+method=GET
+endpoint=/users/@alice/followers
+test
+
+method=POST
+endpoint=/users/@alice/unfollow
+testHd credentials

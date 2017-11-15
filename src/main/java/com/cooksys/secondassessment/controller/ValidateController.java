@@ -44,12 +44,12 @@ public class ValidateController {
 		return hashtagService.hashtagExists(label);
 	}
 	
-	@GetMapping("/tag/username/exists/@{username}")
+	@GetMapping("/username/exists/@{username}")
 	public boolean usernameExists(@PathVariable String username) {
 		return userService.usernameExists(username);
 	}
 
-	@GetMapping("/tag/username/available/@{username}")
+	@GetMapping("/username/available/@{username}")
 	public boolean usernameAvailable(@PathVariable String username) {
 		return userService.usernameAvailable(username);
 	}
