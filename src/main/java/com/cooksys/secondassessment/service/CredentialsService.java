@@ -21,7 +21,7 @@ public class CredentialsService {
 
 	public boolean isValid(Credentials credentials) {
 		Credentials foundCredentials = credentialsRepository.findByUsername(credentials.getUsername());
-		return foundCredentials != null && foundCredentials.getPassword() == credentials.getPassword();
+		return foundCredentials != null && foundCredentials.getPassword().equals(credentials.getPassword());
 	}
 
 }

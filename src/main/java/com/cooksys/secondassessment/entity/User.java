@@ -1,11 +1,13 @@
 package com.cooksys.secondassessment.entity;
 
 import java.sql.Timestamp;
+import java.util.List;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
+import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
 @Entity
@@ -24,6 +26,12 @@ public class User {
 	private Timestamp joined;
 	
 	private Boolean deleted = false;
+	
+	@OneToMany
+	private List<User> followed;
+	
+	@OneToMany
+	private List<User> following;
 	
 	public User() {
 	}

@@ -26,6 +26,14 @@ public class Credentials {
 	public void setPassword(String password) {
 		this.password = password;
 	}
+	
+	public boolean usernameIsNull() {
+		return this.username == null;
+	}
+
+	public boolean passwordIsNull() {
+		return this.password == null;
+	}
 
 	@Override
 	public int hashCode() {

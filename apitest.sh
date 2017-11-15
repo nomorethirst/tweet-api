@@ -4,7 +4,8 @@ host=localhost
 port=8080
 api_root=""
 endpoint="/users"
-header=Content-Type:application/json
+header1="Content-Type: application/json"
+header2="Accept: application/json"
 RED='\033[0;31m' 
 GREEN='\033[0;32m' 
 NC='\033[0m' # No Color
@@ -17,8 +18,9 @@ fi
 # It takes as its arg a function to generate it's request body data
 testHd() {
 	response=$(curl --request $method \
-		--url ${host}:${port}${api_root}${endpoint} \
-		--header $header \
+		--url http://${host}:${port}${api_root}${endpoint} \
+		--header "$header1" \
+		--header "$header2" \
 		--silent \
 		--write-out '%{http_code}' \
 		--data "$($1)")
@@ -26,8 +28,9 @@ testHd() {
 	if [ "$verbose" = true ] ; then
 		echo
 		echo curl --request $method \
-			--url ${host}:${port}${api_root}${endpoint} \
-			--header $header \
+			--url http://${host}:${port}${api_root}${endpoint} \
+			--header \"$header1\" \
+			--header \"$header2\" \
 			--silent \
 			--write-out '%{http_code}' \
 			--data "$($1)"
@@ -62,6 +65,17 @@ test() {
 	fi
 }
 
+
+credentials() {
+	cat <<EOF
+{
+  "credentials": {
+    "username": "$username",
+    "password": "$password"
+  }
+}
+EOF
+}
 
 credentials_profile() {
 	cat <<EOF
@@ -109,8 +123,10 @@ endpoint=/users/@bob
 test
 
 method=DELETE
-endpoint=/users/@alice
-test
+endpoint=/users/@bob
+username=bob
+password=bob1
+testHd credentials
 
 method=GET
 endpoint=/users

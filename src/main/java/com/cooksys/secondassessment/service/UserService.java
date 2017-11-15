@@ -6,6 +6,7 @@ import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Service;
 
+import com.cooksys.secondassessment.dto.CredentialsDTO;
 import com.cooksys.secondassessment.dto.CredentialsProfileDTO;
 import com.cooksys.secondassessment.dto.UserDTO;
 import com.cooksys.secondassessment.entity.Credentials;
@@ -14,6 +15,7 @@ import com.cooksys.secondassessment.entity.User;
 import com.cooksys.secondassessment.exceptions.AlreadyExistsException;
 import com.cooksys.secondassessment.exceptions.InvalidCredentialsException;
 import com.cooksys.secondassessment.exceptions.NotExistsException;
+import com.cooksys.secondassessment.mapper.CredentialsMapper;
 import com.cooksys.secondassessment.mapper.UserMapper;
 import com.cooksys.secondassessment.repository.UserRepository;
 
@@ -26,22 +28,30 @@ public class UserService {
 	
 	private CredentialsService credentialsService;
 	
-	public UserService(UserRepository userRepository, UserMapper userMapper, CredentialsService credentialsService) {
+	private CredentialsMapper credentialsMapper;
+	
+	public UserService(UserRepository userRepository, UserMapper userMapper, 
+			CredentialsService credentialsService, CredentialsMapper credentialsMapper) {
 		super();
 		this.userRepository = userRepository;
 		this.userMapper = userMapper;
 		this.credentialsService = credentialsService;
+		this.credentialsMapper = credentialsMapper;
 	}
 	
-	public List<UserDTO> getAllUsers() {
-		return userRepository.findAll()
+	public List<UserDTO> getAllActiveUsers() {
+		return userRepository.findByDeleted(false)
 				.stream()
 				.map(userMapper::toDto)
 				.collect(Collectors.toList());
 	}
 	
-	public Boolean userExists(String username) {
-		return userRepository.findByUsername(username) != null;
+	public boolean usernameExists(String username) {
+		return userRepository.findByUsernameAndDeleted(username, false) != null;
+	}
+	
+	public boolean usernameAvailable(String username) {
+		return userRepository.findByUsername(username) == null;
 	}
 	
 	public UserDTO createUser(CredentialsProfileDTO dto) throws AlreadyExistsException {
@@ -66,16 +76,14 @@ public class UserService {
 		User user = userRepository.findByUsername(username);
 		
 		if (user == null || user.getDeleted()) {
-			throw new NotExistsException(String.format("User '%s'does not exist or is deleted.", username));
+			throw new NotExistsException(String.format("User '%s' does not exist or is deleted.", username));
 		}
 		return userMapper.toDto(user);
 	}
 	
-	public UserDTO saveUser(CredentialsProfileDTO dto, String username) throws InvalidCredentialsException, NotExistsException {
+	public UserDTO patchUser(CredentialsProfileDTO dto, String username) throws InvalidCredentialsException, NotExistsException {
 		Credentials credentials = dto.getCredentials();
 		Profile profile = dto.getProfile();
-		System.out.println(dto.toString());
-		System.out.println(username);
 		if (!credentials.getUsername().equals(username)) {
 			throw new InvalidCredentialsException(
 					String.format("username '%s' does not match credentials (username '%s').", username, credentials.getUsername()));
@@ -88,12 +96,33 @@ public class UserService {
 		if (user == null || user.getDeleted()) {
 			throw new NotExistsException(String.format("User '%s'does not exist or is deleted.", username));
 		}
-		System.out.println(user);
+		
+		user.getProfile().merge(profile);
 		user = userRepository.save(user);
-		System.out.println(user);
 		
 		return userMapper.toDto(user);
 	}
 	
+	public UserDTO deleteUser(CredentialsDTO credentialsDto, String username) throws InvalidCredentialsException, NotExistsException {
+		System.out.println(credentialsDto.toString());
+		System.out.println(username);
+		Credentials credentials = credentialsMapper.fromDto(credentialsDto);
+		if (!credentials.getUsername().equals(username)) {
+			throw new InvalidCredentialsException(
+					String.format("username '%s' does not match credentials (username '%s').", username, credentials.getUsername()));
+		}
+		if (!credentialsService.isValid(credentials)) {
+			throw new InvalidCredentialsException(
+					String.format("Invalid credentials {username: %s, password: %s}.", credentials.getUsername(), credentials.getPassword()));
+		}
+		User user = userRepository.findByUsername(username);
+		if (user == null || user.getDeleted()) {
+			throw new NotExistsException(String.format("User '%s'does not exist or is already deleted.", username));
+		}
+		user.setDeleted(true);
+		user = userRepository.save(user);
+		
+		return userMapper.toDto(user);
+	}
 
 }

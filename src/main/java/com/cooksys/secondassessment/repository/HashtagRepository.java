@@ -6,5 +6,6 @@ import com.cooksys.secondassessment.entity.Hashtag;
 
 public interface HashtagRepository extends JpaRepository<Hashtag, Integer> {
 
+	Hashtag findByLabel(String label);
 
 }

@@ -5,6 +5,7 @@ import java.util.List;
 
 import javax.servlet.http.HttpServletResponse;
 
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -13,6 +14,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.cooksys.secondassessment.dto.CredentialsDTO;
 import com.cooksys.secondassessment.dto.CredentialsProfileDTO;
 import com.cooksys.secondassessment.dto.UserDTO;
 import com.cooksys.secondassessment.exceptions.AlreadyExistsException;
@@ -33,7 +35,7 @@ public class UsersController {
 
 	@GetMapping
 	public List<UserDTO> getUsers(HttpServletResponse response) {
-		return userService.getAllUsers();
+		return userService.getAllActiveUsers();
 	}
 	
 	@PostMapping
@@ -57,9 +59,10 @@ public class UsersController {
 	}
 	
 	@PatchMapping("/@{username}")
-	public UserDTO patchUser(@RequestBody CredentialsProfileDTO dto, @PathVariable String username, HttpServletResponse response) throws IOException {
+	public UserDTO patchUser(@RequestBody CredentialsProfileDTO dto, @PathVariable String username, 
+			HttpServletResponse response) throws IOException {
 		try {
-			return userService.saveUser(dto, username);
+			return userService.patchUser(dto, username);
 		} catch (InvalidCredentialsException e) {
 			response.sendError(e.STATUS_CODE, e.responseMessage);
 			return null;
@@ -68,5 +71,24 @@ public class UsersController {
 			return null;
 		}
 	}
+	
+	@DeleteMapping(value="/@{username}")
+	public UserDTO deleteUser(@RequestBody CredentialsDTO credentialsDto, @PathVariable String username, 
+			HttpServletResponse response) throws IOException {
+		System.out.println(credentialsDto.toString());
+		System.out.println(username);
+		try {
+			if (credentialsDto.usernameIsNull() || credentialsDto.passwordIsNull())
+				throw new InvalidCredentialsException("Invalid credentials - username or password is null.");
+			return userService.deleteUser(credentialsDto, username);
+		} catch (InvalidCredentialsException e) {
+			response.sendError(e.STATUS_CODE, e.responseMessage);
+			return null;
+		} catch (NotExistsException e) {
+			response.sendError(e.STATUS_CODE, e.responseMessage);
+			return null;
+		}
+	}
+	
 
 }

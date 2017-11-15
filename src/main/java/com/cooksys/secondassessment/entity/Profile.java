@@ -46,6 +46,33 @@ public class Profile {
 	public void setPhone(String phone) {
 		this.phone = phone;
 	}
+	
+	public boolean firstNameIsNull() {
+		return this.firstName == null;
+	}
+	
+	public boolean lastNameIsNull() {
+		return this.lastName == null;
+	}
+
+	public boolean emailIsNull() {
+		return this.email == null;
+	}
+
+	public boolean phoneIsNull() {
+		return this.phone == null;
+	}
+	
+	public void merge(Profile that) {
+		if (!that.firstNameIsNull())
+			this.firstName = that.getFirstName();
+		if (!that.lastNameIsNull())
+			this.lastName = that.getLastName();
+		if (!that.emailIsNull())
+			this.email = that.getEmail();
+		if (!that.phoneIsNull())
+			this.phone = that.getPhone();
+	}
 
 	@Override
 	public int hashCode() {
