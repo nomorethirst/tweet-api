@@ -58,6 +58,21 @@ public class Tweet {
 	    this.content = content;
 	}
 
+	public Tweet(User author, Timestamp posted, String content, Tweet inReplyTo) {
+	    super();
+	    this.author = author;
+	    this.posted = posted;
+	    this.content = content;
+	    this.inReplyTo = inReplyTo;
+	}
+
+	public Tweet(User author, Timestamp posted, Tweet repostOf) {
+	    super();
+	    this.author = author;
+	    this.posted = posted;
+	    this.repostOf = repostOf;
+	}
+
 	public Integer getId() {
 		return id;
 	}
@@ -152,6 +167,14 @@ public class Tweet {
 
 	public void setTags(List<Hashtag> tags) {
 	    this.tags = tags;
+	}
+	
+	public boolean hasInReplyTo() {
+	    return inReplyTo != null;
+	}
+	
+	public boolean hasReplies() {
+	    return !replies.isEmpty();
 	}
 
 	@Override

@@ -2,8 +2,6 @@ package com.cooksys.secondassessment.dto;
 
 import java.sql.Timestamp;
 
-import com.cooksys.secondassessment.entity.User;
-
 public class TweetDTO {
 	
 	private Integer id;
@@ -13,6 +11,10 @@ public class TweetDTO {
 	private Timestamp posted;
 	
 	private String content;
+	
+	private TweetDTO inReplyTo;
+	
+	private TweetDTO repostOf;
 
 	public Integer getId() {
 		return id;
@@ -44,6 +46,50 @@ public class TweetDTO {
 
 	public void setContent(String content) {
 		this.content = content;
+	}
+	
+	public TweetDTO getInReplyTo() {
+	    return inReplyTo;
+	}
+
+	public void setInReplyTo(TweetDTO inReplyTo) {
+	    this.inReplyTo = inReplyTo;
+	}
+
+	public TweetDTO getRepostOf() {
+	    return repostOf;
+	}
+
+	public void setRepostOf(TweetDTO repostOf) {
+	    this.repostOf = repostOf;
+	}
+
+	public boolean isValidSimple() {
+	    return id != null &&
+		    author != null && author.isValid() &&
+		    posted != null &&
+		    content != null;
+	}
+	
+	public boolean isValidRepost() {
+	    return id != null &&
+		    author != null && author.isValid() &&
+		    posted != null &&
+		    repostOf != null; // &&
+//                        (repostOf.isValidSimple() ||
+//                            repostOf.isValidReply() ||
+//                            repostOf.isValidRepost());
+	}
+	
+	public boolean isValidReply() {
+	    return id != null &&
+		    author != null && author.isValid() &&
+		    posted != null &&
+		    content != null &&
+		    inReplyTo != null; // &&
+//                        (inReplyTo.isValidSimple() ||
+//                            inReplyTo.isValidReply() ||
+//                            inReplyTo.isValidRepost());
 	}
 	
 

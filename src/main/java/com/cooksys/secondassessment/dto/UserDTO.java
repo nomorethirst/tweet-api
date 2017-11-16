@@ -36,5 +36,11 @@ public class UserDTO {
 		this.joined = joined;
 	}
 	
+	public boolean isValid() {
+	    return username != null && 
+		    profile != null && profile.isValid() &&
+		    joined != null;
+	}
+	
 
 }

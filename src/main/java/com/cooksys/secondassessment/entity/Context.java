@@ -2,38 +2,47 @@ package com.cooksys.secondassessment.entity;
 
 import java.util.List;
 
+import com.cooksys.secondassessment.dto.TweetDTO;
+
 public class Context {
 	
-	private Tweet target;
+	private TweetDTO target;
 	
-	private List<Tweet> before;
+	private List<TweetDTO> before;
 	
-	private List<Tweet> after;
+	private List<TweetDTO> after;
 	
 	public Context() {}
 
-	public Tweet getTarget() {
-		return target;
+	public Context(TweetDTO target, List<TweetDTO> before, List<TweetDTO> after) {
+	    super();
+	    this.target = target;
+	    this.before = before;
+	    this.after = after;
 	}
 
-	public void setTarget(Tweet target) {
-		this.target = target;
+	public TweetDTO getTarget() {
+	    return target;
 	}
 
-	public List<Tweet> getBefore() {
-		return before;
+	public void setTarget(TweetDTO target) {
+	    this.target = target;
 	}
 
-	public void setBefore(List<Tweet> before) {
-		this.before = before;
+	public List<TweetDTO> getBefore() {
+	    return before;
 	}
 
-	public List<Tweet> getAfter() {
-		return after;
+	public void setBefore(List<TweetDTO> before) {
+	    this.before = before;
 	}
 
-	public void setAfter(List<Tweet> after) {
-		this.after = after;
+	public List<TweetDTO> getAfter() {
+	    return after;
+	}
+
+	public void setAfter(List<TweetDTO> after) {
+	    this.after = after;
 	}
 
 	@Override

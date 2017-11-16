@@ -1,6 +1,7 @@
 package com.cooksys.secondassessment.service;
 
 import java.sql.Timestamp;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -10,7 +11,10 @@ import javax.transaction.Transactional;
 import org.springframework.stereotype.Service;
 
 import com.cooksys.secondassessment.dto.ContentCredentialsDTO;
+import com.cooksys.secondassessment.dto.CredentialsDTO;
 import com.cooksys.secondassessment.dto.TweetDTO;
+import com.cooksys.secondassessment.dto.UserDTO;
+import com.cooksys.secondassessment.entity.Context;
 import com.cooksys.secondassessment.entity.Credentials;
 import com.cooksys.secondassessment.entity.Hashtag;
 import com.cooksys.secondassessment.entity.Tweet;
@@ -53,6 +57,15 @@ public class TweetService {
     public List<TweetDTO> getAllActiveTweets() {
 	return tweetRepository.findByDeletedOrderByPostedDesc(false).stream().map(tweetMapper::toDto)
 		.collect(Collectors.toList());
+    }
+    
+    public TweetDTO getTweet(Integer id) throws NotExistsException {
+	Tweet tweet = tweetRepository.findByIdAndDeleted(id, false);
+	if (tweet == null)
+	    throw new NotExistsException(String.format("Tweet not found with id %d.", id));
+	TweetDTO tweetDto = tweetMapper.toDto(tweet);
+	tweetDto.setAuthor(userMapper.toDto(tweet.getAuthor()));
+	return tweetDto;
     }
     
     @Transactional
@@ -111,5 +124,189 @@ public class TweetService {
 	tweetDto.setAuthor(userMapper.toDto(tweet.getAuthor()));
 	return tweetDto;
     }
+    
+    @Transactional
+    public TweetDTO deleteTweet(CredentialsDTO dto, Integer id) throws InvalidCredentialsException, NotExistsException {
+	Credentials credentials = dto.getCredentials();
+	if (!credentialsService.isValid(dto.getCredentials())) {
+	    throw new InvalidCredentialsException(String.format("Invalid credentials {username: %s, password: %s}.",
+		    credentials.getUsername(), credentials.getPassword()));
+	}
+	Tweet tweet = tweetRepository.findByIdAndDeleted(id, false);
+	if (tweet == null)
+	    throw new NotExistsException(String.format("Tweet not found with id %d, or already deleted.", id));
+	User requestor = userRepository.findByUsernameAndDeleted(credentials.getUsername(), false);
+	if (requestor == null)
+	    throw new NotExistsException(String.format("User '%s' does not exist or is deleted.", credentials.getUsername()));
+	if (!tweet.getAuthor().equals(requestor))
+	    throw new InvalidCredentialsException(String.format("User '%s' is not the author of tweet with id '%d'.", credentials.getUsername(), id));
+	
+	tweet.setDeleted(true);
+	
+	TweetDTO tweetDto = tweetMapper.toDto(tweet);
+	tweetDto.setAuthor(userMapper.toDto(tweet.getAuthor()));
+	return tweetDto;
+	
+    }
+    
+    @Transactional
+    public void likeTweet(CredentialsDTO dto, Integer id) throws InvalidCredentialsException, NotExistsException {
+	Credentials credentials = dto.getCredentials();
+	if (!credentialsService.isValid(dto.getCredentials())) {
+	    throw new InvalidCredentialsException(String.format("Invalid credentials {username: %s, password: %s}.",
+		    credentials.getUsername(), credentials.getPassword()));
+	}
+	Tweet tweet = tweetRepository.findByIdAndDeleted(id, false);
+	if (tweet == null)
+	    throw new NotExistsException(String.format("Tweet not found with id %d, or already deleted.", id));
+	User requestor = userRepository.findByUsernameAndDeleted(credentials.getUsername(), false);
+	if (requestor == null)
+	    throw new NotExistsException(String.format("User '%s' does not exist or is deleted.", credentials.getUsername()));
+	
+	tweet.getLikes().add(requestor);
+	
+    }
+    
+    @Transactional
+    public TweetDTO replyTweet(ContentCredentialsDTO dto, Integer id) throws InvalidCredentialsException, NotExistsException {
+	String content = dto.getContent();
+	Credentials credentials = dto.getCredentials();
+	if (!credentialsService.isValid(dto.getCredentials())) {
+	    throw new InvalidCredentialsException(String.format("Invalid credentials {username: %s, password: %s}.",
+		    credentials.getUsername(), credentials.getPassword()));
+	}
+	User requestor = userRepository.findByUsernameAndDeleted(credentials.getUsername(), false);
+	if (requestor == null)
+	    throw new NotExistsException(String.format("User '%s' does not exist or is deleted.", credentials.getUsername()));
 
+	Tweet inReplyTo = tweetRepository.findByIdAndDeleted(id, false);
+	if (inReplyTo == null)
+	    throw new NotExistsException(String.format("Tweet not found with id %d, or already deleted.", id));
+
+	Tweet tweet = tweetRepository.save( new Tweet(
+		requestor, 
+		new Timestamp(System.currentTimeMillis()),
+		content,
+		inReplyTo)
+		);
+	parseContent(tweet);
+	inReplyTo.getReplies().add(tweet);
+	TweetDTO tweetDto = tweetMapper.toDto(tweet);
+	tweetDto.setAuthor(userMapper.toDto(tweet.getAuthor()));
+	return tweetDto;
+    }
+
+    @Transactional
+    public TweetDTO repostTweet(CredentialsDTO dto, Integer id) throws InvalidCredentialsException, NotExistsException {
+	Credentials credentials = dto.getCredentials();
+	if (!credentialsService.isValid(dto.getCredentials())) {
+	    throw new InvalidCredentialsException(String.format("Invalid credentials {username: %s, password: %s}.",
+		    credentials.getUsername(), credentials.getPassword()));
+	}
+	User requestor = userRepository.findByUsernameAndDeleted(credentials.getUsername(), false);
+	if (requestor == null)
+	    throw new NotExistsException(String.format("User '%s' does not exist or is deleted.", credentials.getUsername()));
+
+	Tweet repostOf = tweetRepository.findByIdAndDeleted(id, false);
+	if (repostOf == null)
+	    throw new NotExistsException(String.format("Tweet not found with id %d, or already deleted.", id));
+
+	Tweet tweet = tweetRepository.save( new Tweet(
+		requestor, 
+		new Timestamp(System.currentTimeMillis()),
+		repostOf)
+		);
+	repostOf.getReposts().add(tweet);
+	TweetDTO tweetDto = tweetMapper.toDto(tweet);
+	tweetDto.setAuthor(userMapper.toDto(tweet.getAuthor()));
+	return tweetDto;
+    }
+
+    public List<Hashtag> getTags(Integer id) throws NotExistsException {
+	Tweet tweet = tweetRepository.findByIdAndDeleted(id, false);
+	if (tweet == null)
+	    throw new NotExistsException(String.format("Tweet not found with id %d.", id));
+	return tweet.getTags();
+    }
+    
+    public List<UserDTO> getLikes(Integer id) throws NotExistsException {
+	Tweet tweet = tweetRepository.findByIdAndDeleted(id, false);
+	if (tweet == null)
+	    throw new NotExistsException(String.format("Tweet not found with id %d.", id));
+	return tweet.getLikes()
+		.stream()
+		.filter(user -> userService.usernameExists(user.getUsername()))
+		.map(userMapper::toDto)
+		.collect(Collectors.toList());
+    }
+    
+    public Context getContext(Integer id) throws NotExistsException {
+	Tweet target = tweetRepository.findByIdAndDeleted(id, false);
+	if (target == null)
+	    throw new NotExistsException(String.format("Tweet not found with id %d.", id));
+
+	List<Tweet> acc = new ArrayList<Tweet>();
+	List<TweetDTO> before = getBefore(target, acc)
+		.stream()
+		.map(tweetMapper::toDto)
+		.collect(Collectors.toList());
+	List<TweetDTO> after = null;//getAfter(target);
+	
+	return new Context(tweetMapper.toDto(target), before, after);
+    }
+    
+//    private List<Tweet> getAfter(Tweet target, List<Tweet> after) {
+//	if (!target.hasReplies()) {
+//	    return after;
+//	} else {
+//	    for (Tweet reply: target.getReplies()) {
+//		List<Tweet> list 
+//		after.addAll(getAfter(reply, ))
+//	    }
+//	}
+//	
+//    }
+
+    private List<Tweet> getBefore(Tweet target, List<Tweet> before) {
+	if (!target.hasInReplyTo()) {
+	    return before;
+	} else {
+	    before.add(target);
+	    return getBefore(target.getInReplyTo(), before);
+	}
+    }
+
+    public List<TweetDTO> getReplies(Integer id) throws NotExistsException {
+	Tweet tweet = tweetRepository.findByIdAndDeleted(id, false);
+	if (tweet == null)
+	    throw new NotExistsException(String.format("Tweet not found with id %d.", id));
+	return tweet.getReplies()
+		.stream()
+		.filter(reply -> !reply.getDeleted() )
+		.map(tweetMapper::toDto)
+		.collect(Collectors.toList());
+    }
+    
+    public List<TweetDTO> getReposts(Integer id) throws NotExistsException {
+	Tweet tweet = tweetRepository.findByIdAndDeleted(id, false);
+	if (tweet == null)
+	    throw new NotExistsException(String.format("Tweet not found with id %d.", id));
+	return tweet.getReposts()
+		.stream()
+		.filter(repost -> !repost.getDeleted() )
+		.map(tweetMapper::toDto)
+		.collect(Collectors.toList());
+    }
+    
+    public List<UserDTO> getMentions(Integer id) throws NotExistsException {
+	Tweet tweet = tweetRepository.findByIdAndDeleted(id, false);
+	if (tweet == null)
+	    throw new NotExistsException(String.format("Tweet not found with id %d.", id));
+	return tweet.getMentions()
+		.stream()
+		.filter(user -> userService.usernameExists(user.getUsername()))
+		.map(userMapper::toDto)
+		.collect(Collectors.toList());
+    }
+    
 }
