@@ -73,6 +73,10 @@ public class Profile {
 		if (!that.phoneIsNull())
 			this.phone = that.getPhone();
 	}
+	
+	public boolean isValid() {
+	    return email != null;
+	}
 
 	@Override
 	public int hashCode() {

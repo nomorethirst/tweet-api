@@ -34,6 +34,10 @@ public class Credentials {
 	public boolean passwordIsNull() {
 		return this.password == null;
 	}
+	
+	public boolean isValid() {
+	    return username != null && password != null;
+	}
 
 	@Override
 	public int hashCode() {

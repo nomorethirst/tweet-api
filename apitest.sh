@@ -69,8 +69,10 @@ test() {
 credentials() {
 	cat <<EOF
 {
+  "credentials": {
     "username": "$username",
     "password": "$password"
+  }
 }
 EOF
 }

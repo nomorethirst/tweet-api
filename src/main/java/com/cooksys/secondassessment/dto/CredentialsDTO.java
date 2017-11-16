@@ -1,47 +1,27 @@
 package com.cooksys.secondassessment.dto;
 
+import com.cooksys.secondassessment.entity.Credentials;
+
 public class CredentialsDTO {
 	
-	private String username;
-	
-	private String password;
-	
-	
+	private Credentials credentials;
 
 	public CredentialsDTO() {}
-
-	public CredentialsDTO(String username, String password) {
-	    super();
-	    this.username = username;
-	    this.password = password;
+	
+	public CredentialsDTO(Credentials credentials) {
+	    this.credentials = credentials;
 	}
 
-	public String getUsername() {
-		return username;
+	public Credentials getCredentials() {
+	    return credentials;
 	}
 
-	public void setUsername(String username) {
-		this.username = username;
-	}
-
-	public String getPassword() {
-		return password;
-	}
-
-	public void setPassword(String password) {
-		this.password = password;
+	public void setCredentials(Credentials credentials) {
+	    this.credentials = credentials;
 	}
 	
-	public boolean usernameIsNull() {
-		return this.username == null;
+	public boolean isValid() {
+	    return credentials != null && credentials.isValid();
 	}
-
-	public boolean passwordIsNull() {
-		return this.password == null;
-	}
-
-	@Override
-	public String toString() {
-		return "CredentialsDTO [username=" + username + ", password=" + password + "]";
-	}
+	
 }

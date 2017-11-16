@@ -29,6 +29,11 @@ public class CredentialsProfileDTO {
 	public String toString() {
 		return "CredentialsProfileDTO [credentials=" + credentials.toString() + ", profile=" + profile.toString() + "]";
 	}
+
+	public boolean isValid() {
+	    return credentials != null && credentials.isValid() &&
+		    profile != null && profile.isValid();
+	}
 	
 	
 	

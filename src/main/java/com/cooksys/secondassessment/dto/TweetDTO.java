@@ -8,7 +8,7 @@ public class TweetDTO {
 	
 	private Integer id;
 	
-	private User author;
+	private UserDTO author;
 	
 	private Timestamp posted;
 	
@@ -22,11 +22,11 @@ public class TweetDTO {
 		this.id = id;
 	}
 
-	public User getAuthor() {
+	public UserDTO getAuthor() {
 		return author;
 	}
 
-	public void setAuthor(User author) {
+	public void setAuthor(UserDTO author) {
 		this.author = author;
 	}
 

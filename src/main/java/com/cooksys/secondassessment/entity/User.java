@@ -7,6 +7,7 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
+import javax.persistence.ManyToMany;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
@@ -33,8 +34,13 @@ public class User {
 	@OneToMany
 	private List<User> following;
 	
-	public User() {
-	}
+	@OneToMany
+	private List<Tweet> tweets;
+	
+	@ManyToMany
+	private List<Tweet> mentions;
+	
+	public User() {}
 
 	public User(String username, Profile profile, Timestamp joined) {
 		super();
@@ -97,6 +103,28 @@ public class User {
 
 	public void setFollowing(List<User> following) {
 	    this.following = following;
+	}
+
+	public List<Tweet> getTweets() {
+	    return tweets;
+	}
+
+	public void setTweets(List<Tweet> tweets) {
+	    this.tweets = tweets;
+	}
+
+	public List<Tweet> getMentions() {
+	    return mentions;
+	}
+
+	public void setMentions(List<Tweet> mentions) {
+	    this.mentions = mentions;
+	}
+	
+	public boolean isValid() {
+	    return username != null &&
+		    profile != null && profile.isValid() &&
+		    joined != null;
 	}
 
 	@Override

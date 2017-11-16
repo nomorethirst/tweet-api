@@ -1,11 +1,14 @@
 package com.cooksys.secondassessment.entity;
 
 import java.sql.Timestamp;
+import java.util.List;
 
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
+import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 
 @Entity
@@ -28,7 +31,32 @@ public class Tweet {
 	@OneToOne
 	private Tweet repostOf;
 	
+	private Boolean deleted = false;
+	
+	@OneToMany
+	private List<Tweet> replies;
+
+	@OneToMany
+	private List<Tweet> reposts;
+
+	@ManyToMany
+	private List<User> mentions;
+	
+	@OneToMany
+	private List<User> likes;
+
+	@OneToMany
+	private List<Hashtag> tags;
+	
+
 	public Tweet() {}
+
+	public Tweet(User author, Timestamp posted, String content) {
+	    super();
+	    this.author = author;
+	    this.posted = posted;
+	    this.content = content;
+	}
 
 	public Integer getId() {
 		return id;
@@ -76,6 +104,54 @@ public class Tweet {
 
 	public void setRepostOf(Tweet repostOf) {
 		this.repostOf = repostOf;
+	}
+
+	public Boolean getDeleted() {
+	    return deleted;
+	}
+
+	public void setDeleted(Boolean deleted) {
+	    this.deleted = deleted;
+	}
+
+	public List<Tweet> getReplies() {
+	    return replies;
+	}
+
+	public void setReplies(List<Tweet> replies) {
+	    this.replies = replies;
+	}
+
+	public List<Tweet> getReposts() {
+	    return reposts;
+	}
+
+	public void setReposts(List<Tweet> reposts) {
+	    this.reposts = reposts;
+	}
+
+	public List<User> getMentions() {
+	    return mentions;
+	}
+
+	public void setMentions(List<User> mentions) {
+	    this.mentions = mentions;
+	}
+
+	public List<User> getLikes() {
+	    return likes;
+	}
+
+	public void setLikes(List<User> likes) {
+	    this.likes = likes;
+	}
+
+	public List<Hashtag> getTags() {
+	    return tags;
+	}
+
+	public void setTags(List<Hashtag> tags) {
+	    this.tags = tags;
 	}
 
 	@Override
