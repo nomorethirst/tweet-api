@@ -8,8 +8,8 @@ import javax.transaction.Transactional;
 
 import org.springframework.stereotype.Service;
 
-import com.cooksys.secondassessment.dto.CredentialsDTO;
 import com.cooksys.secondassessment.dto.CredentialsProfileDTO;
+import com.cooksys.secondassessment.dto.TweetDTO;
 import com.cooksys.secondassessment.dto.UserDTO;
 import com.cooksys.secondassessment.entity.Credentials;
 import com.cooksys.secondassessment.entity.Profile;
@@ -19,6 +19,7 @@ import com.cooksys.secondassessment.exceptions.AlreadyFollowingException;
 import com.cooksys.secondassessment.exceptions.InvalidCredentialsException;
 import com.cooksys.secondassessment.exceptions.NotExistsException;
 import com.cooksys.secondassessment.mapper.CredentialsMapper;
+import com.cooksys.secondassessment.mapper.TweetMapper;
 import com.cooksys.secondassessment.mapper.UserMapper;
 import com.cooksys.secondassessment.repository.UserRepository;
 
@@ -32,14 +33,17 @@ public class UserService {
     private CredentialsService credentialsService;
 
     private CredentialsMapper credentialsMapper;
+    
+    private TweetMapper tweetMapper;
 
     public UserService(UserRepository userRepository, UserMapper userMapper, CredentialsService credentialsService,
-	    CredentialsMapper credentialsMapper) {
+	    CredentialsMapper credentialsMapper, TweetMapper tweetMapper) {
 	super();
 	this.userRepository = userRepository;
 	this.userMapper = userMapper;
 	this.credentialsService = credentialsService;
 	this.credentialsMapper = credentialsMapper;
+	this.tweetMapper = tweetMapper;
     }
 
     public List<UserDTO> getAllActiveUsers() {
@@ -180,8 +184,11 @@ public class UserService {
 	if (user == null || user.getDeleted()) {
 	    throw new NotExistsException(String.format("User '%s' does not exist or is deleted.", username));
 	}
-	return user.getFollowers().stream().filter(follower -> usernameExists(follower.getUsername()))
-		.map(userMapper::toDto).collect(Collectors.toList());
+	return user.getFollowers()
+		.stream()
+		.filter(follower -> usernameExists(follower.getUsername()))
+		.map(userMapper::toDto)
+		.collect(Collectors.toList());
     }
 
     public List<UserDTO> getFollowing(String username) throws NotExistsException {
@@ -190,8 +197,25 @@ public class UserService {
 	if (user == null || user.getDeleted()) {
 	    throw new NotExistsException(String.format("User '%s' does not exist or is deleted.", username));
 	}
-	return user.getFollowing().stream().filter(following -> usernameExists(following.getUsername()))
-		.map(userMapper::toDto).collect(Collectors.toList());
+	return user.getFollowing()
+		.stream()
+		.filter(following -> usernameExists(following.getUsername()))
+		.map(userMapper::toDto)
+		.collect(Collectors.toList());
+    }
+
+    public List<TweetDTO> getTweetsForUser(String username) throws NotExistsException {
+	User user = userRepository.findByUsername(username);
+
+	if (user == null || user.getDeleted()) {
+	    throw new NotExistsException(String.format("User '%s' does not exist or is deleted.", username));
+	}
+	return user.getTweets()
+		.stream()
+		.filter(tweet -> !tweet.getDeleted())
+		.map(tweetMapper::toDto)
+		.collect(Collectors.toList());
+
     }
 
 }

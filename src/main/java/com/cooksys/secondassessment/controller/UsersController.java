@@ -16,9 +16,8 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.cooksys.secondassessment.dto.CredentialsDTO;
 import com.cooksys.secondassessment.dto.CredentialsProfileDTO;
+import com.cooksys.secondassessment.dto.TweetDTO;
 import com.cooksys.secondassessment.dto.UserDTO;
-import com.cooksys.secondassessment.entity.Credentials;
-import com.cooksys.secondassessment.entity.Profile;
 import com.cooksys.secondassessment.exceptions.AlreadyExistsException;
 import com.cooksys.secondassessment.exceptions.AlreadyFollowingException;
 import com.cooksys.secondassessment.exceptions.InvalidCredentialsException;
@@ -161,5 +160,17 @@ public class UsersController {
 	    return null;
 	}
     }
+
+    @GetMapping("/@{username}/tweets")
+    public List<TweetDTO> getTweets(@PathVariable String username, HttpServletResponse response) throws IOException {
+	try {
+	    return userService.getTweetsForUser(username);
+	} catch (NotExistsException e) {
+	    response.sendError(e.STATUS_CODE, e.responseMessage);
+	    return null;
+	}
+    }
+    
+    
 
 }
