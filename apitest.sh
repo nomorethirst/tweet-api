@@ -27,6 +27,7 @@ testHd() {
 	response_code=$(echo -n $response | tail -c 3)
 	if [ "$verbose" = true ] ; then
 		echo
+		echo REQUEST:
 		echo curl --request $method \
 			--url http://${host}:${port}${api_root}${endpoint} \
 			--header \"$header1\" \
@@ -34,7 +35,13 @@ testHd() {
 			--silent \
 			--write-out '%{http_code}' \
 			--data "$($1)"
+		echo
+		echo RESPONSE:
+		echo $response
+		echo
+		echo STATUS:
 		echo $response_code
+		echo
 	fi
 	if [ "$response_code" = "200" ]; then
 		echo ${GREEN}✔  $method $endpoint $NC
@@ -52,11 +59,18 @@ test() {
 	response_code=$(echo -n $response | tail -c 3)
 	if [ "$verbose" = true ] ; then
 		echo
+		echo REQUEST:
 		echo curl --request $method \
 			--url ${host}:${port}${api_root}${endpoint} \
 			--silent \
 			--write-out '%{http_code}'
+		echo
+		echo RESPONSE:
+		echo $response
+		echo
+		echo STATUS:
 		echo $response_code
+		echo
 	fi
 	if [ "$response_code" = "200" ]; then
 		echo ${GREEN}✔  $method $endpoint $NC
@@ -160,3 +174,7 @@ test
 method=POST
 endpoint=/users/@alice/unfollow
 testHd credentials
+
+method=GET
+endpoint=/users/@bob/tweets
+test
