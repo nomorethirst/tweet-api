@@ -10,7 +10,7 @@ RED='\033[0;31m'
 GREEN='\033[0;32m' 
 NC='\033[0m' # No Color
 verbose=false
-if [ $1 = verbose ] ; then
+if [ "$1" = "verbose" ] ; then
 	verbose=true
 fi
 
@@ -24,29 +24,25 @@ testHd() {
 		--silent \
 		--write-out '%{http_code}' \
 		--data "$($1)")
-	response_code=$(echo -n $response | tail -c 3)
-	if [ "$verbose" = true ] ; then
-		echo
-		echo REQUEST:
-		echo curl --request $method \
-			--url http://${host}:${port}${api_root}${endpoint} \
-			--header \"$header1\" \
-			--header \"$header2\" \
-			--silent \
-			--write-out '%{http_code}' \
-			--data "$($1)"
-		echo
-		echo RESPONSE:
-		echo $response
-		echo
-		echo STATUS:
-		echo $response_code
-		echo
-	fi
-	if [ "$response_code" = "200" ]; then
+	status=$(echo -n $response | tail -c 4)
+	if [ "$status" = "200" ]; then
 		echo ${GREEN}✔  $method $endpoint $NC
 	else
 		echo ${RED}✘  $method $endpoint $NC
+	fi
+	if [ "$verbose" = true ] ; then
+		echo
+		echo REQUEST:
+		echo "curl --request $method \\"
+		echo "     --url http://${host}:${port}${api_root}${endpoint} \\"
+		echo "     --header \"$header1\" \\"
+		echo "     --header \"$header2\" \\"
+		echo "     --data \\"
+		echo $($1) | python -m json.tool
+		echo
+		echo RESPONSE:
+		echo ${response%???} | python -m json.tool
+		echo
 	fi
 }
 
@@ -56,26 +52,21 @@ test() {
 		--url ${host}:${port}${api_root}${endpoint} \
 		--silent \
 		--write-out '%{http_code}')
-	response_code=$(echo -n $response | tail -c 3)
-	if [ "$verbose" = true ] ; then
-		echo
-		echo REQUEST:
-		echo curl --request $method \
-			--url ${host}:${port}${api_root}${endpoint} \
-			--silent \
-			--write-out '%{http_code}'
-		echo
-		echo RESPONSE:
-		echo $response
-		echo
-		echo STATUS:
-		echo $response_code
-		echo
-	fi
-	if [ "$response_code" = "200" ]; then
+	status=$(echo -n $response | tail -c 4)
+	if [ "$status" = "200" ]; then
 		echo ${GREEN}✔  $method $endpoint $NC
 	else
 		echo ${RED}✘  $method $endpoint $NC
+	fi
+	if [ "$verbose" = true ] ; then
+		echo
+		echo REQUEST:
+		echo "curl --request $method \\"
+		echo "     --url ${host}:${port}${api_root}${endpoint}"
+		echo
+		echo RESPONSE:
+		echo ${response%???} | python -m json.tool
+		echo
 	fi
 }
 
@@ -108,7 +99,22 @@ credentials_profile() {
 EOF
 }
 
-echo "Testing CRUD functionality of REST API at ${host}:${port}"
+content_credentials() {
+	cat <<EOF
+{
+  "content": "$tweet",
+  "credentials": {
+    "username": "$username",
+    "password": "$password"
+  }
+}
+EOF
+}
+
+echo "Testing REST API endpoints at ${host}:${port}"
+echo
+echo "  (green means response == 200, red means response != 200)"
+echo "  Try \"./apitest.sh verbose\" to see request and response"
 echo
 
 
@@ -178,3 +184,13 @@ testHd credentials
 method=GET
 endpoint=/users/@bob/tweets
 test
+
+method=POST
+tweet="Here is my first tweet!"
+endpoint=/tweets
+testHd content_credentials
+tweet="Here is my second with #myhashtag"
+testHd content_credentials
+tweet="Hey @alice did you see my tweet?"
+testHd content_credentials
+
