@@ -120,7 +120,11 @@ public class User {
 	public void setMentions(List<Tweet> mentions) {
 	    this.mentions = mentions;
 	}
-	
+
+	public boolean mentionsIsNull() {
+		return mentions == null;
+	}
+
 	public boolean isValid() {
 	    return username != null &&
 		    profile != null && profile.isValid() &&

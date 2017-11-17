@@ -82,21 +82,41 @@ public class TweetService {
 		.filter( word -> word.startsWith("@") )
 		.map( word -> word.substring(1) )
 		.collect(Collectors.toList());
+	List<Hashtag> tags = new ArrayList<Hashtag>();
 	for (String label: labels) {
 	    Hashtag tag;
 	    if (!hashtagService.hashtagExists(label)) {
-		tag = hashtagService.createHashtag(label);
+            tag = hashtagService.createHashtag(label);
 	    } else {
-		tag = hashtagService.getHashTag(label);
-		tag.setLastUsed(new Timestamp(System.currentTimeMillis()));
+            tag = hashtagService.getHashTag(label);
+            tag.setLastUsed(new Timestamp(System.currentTimeMillis()));
 	    }
-	    tweet.getTags().add(tag);
+	    tags.add(tag);
+	}
+	if (tweet.tagsIsNull()) {
+		tweet.setTags(tags);
+	} else {
+		tweet.getTags().addAll(tags);
 	}
 	for (String mention: mentions) {
 	    User user = userRepository.findByUsername(mention);
 	    if (user != null) {
-		user.getMentions().add(tweet);
-		tweet.getMentions().add(user);
+	        if (user.mentionsIsNull()) {
+	        	List<Tweet> tweets = new ArrayList<Tweet>();
+	        	tweets.add(tweet);
+	        	//TODO: how to init List if can't use ArrayList in JPA
+	        	user.setMentions(tweets);
+			} else {
+				user.getMentions().add(tweet);
+			}
+			if (tweet.mentionsIsNull()) {
+				List<User> users = new ArrayList<User>();
+				users.add(user);
+				//TODO: how to init List if can't use ArrayList in JPA
+				tweet.setMentions(users);
+			} else {
+				tweet.getMentions().add(user);
+			}
 	    }
 	}
     }

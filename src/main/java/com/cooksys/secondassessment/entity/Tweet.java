@@ -153,6 +153,10 @@ public class Tweet {
 	    this.mentions = mentions;
 	}
 
+    public boolean mentionsIsNull() {
+        return mentions == null;
+    }
+
 	public List<User> getLikes() {
 	    return likes;
 	}
@@ -168,7 +172,11 @@ public class Tweet {
 	public void setTags(List<Hashtag> tags) {
 	    this.tags = tags;
 	}
-	
+
+    public boolean tagsIsNull() {
+        return tags == null;
+    }
+
 	public boolean hasInReplyTo() {
 	    return inReplyTo != null;
 	}
