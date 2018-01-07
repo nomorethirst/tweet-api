@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.util.List;
 
 import javax.servlet.http.HttpServletResponse;
+import javax.validation.Valid;
 
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -20,7 +21,6 @@ import com.cooksys.tweetapi.dto.UserDTO;
 import com.cooksys.tweetapi.entity.Context;
 import com.cooksys.tweetapi.entity.Hashtag;
 import com.cooksys.tweetapi.exceptions.InvalidCredentialsException;
-import com.cooksys.tweetapi.exceptions.InvalidRequestException;
 import com.cooksys.tweetapi.exceptions.NotExistsException;
 import com.cooksys.tweetapi.service.TweetService;
 
@@ -50,11 +50,9 @@ public class TweetsController {
     }
 
     @PostMapping
-    public TweetDTO createSimpleTweet(@RequestBody ContentCredentialsDTO dto, HttpServletResponse response) throws IOException {
+    public TweetDTO createSimpleTweet(@Valid @RequestBody ContentCredentialsDTO dto, HttpServletResponse response) throws IOException {
 
         try {
-            if (!dto.isValid())
-                throw new InvalidRequestException("Invalid Request body");
             return tweetService.createSimpleTweet(dto);
         } catch (InvalidCredentialsException e) {
             response.sendError(e.STATUS_CODE, e.responseMessage);
@@ -62,23 +60,15 @@ public class TweetsController {
         } catch (NotExistsException e) {
             response.sendError(e.STATUS_CODE, e.responseMessage);
             return null;
-        } catch (InvalidRequestException e) {
-            response.sendError(e.STATUS_CODE, e.responseMessage);
-            return null;
         }
     }
 
     @DeleteMapping("/{id}")
-    public TweetDTO deleteTweet(@RequestBody CredentialsDTO dto, @PathVariable Integer id,
+    public TweetDTO deleteTweet(@Valid @RequestBody CredentialsDTO dto, @PathVariable Integer id,
                                 HttpServletResponse response) throws IOException {
 
         try {
-            if (!dto.isValid())
-                throw new InvalidRequestException("Invalid request body.");
             return tweetService.deleteTweet(dto, id);
-        } catch (InvalidRequestException e) {
-            response.sendError(e.STATUS_CODE, e.responseMessage);
-            return null;
         } catch (InvalidCredentialsException e) {
             response.sendError(e.STATUS_CODE, e.responseMessage);
             return null;
@@ -90,14 +80,10 @@ public class TweetsController {
     }
 
     @PostMapping("/{id}/like")
-    public void likeTweet(@RequestBody CredentialsDTO dto, @PathVariable Integer id,
+    public void likeTweet(@Valid @RequestBody CredentialsDTO dto, @PathVariable Integer id,
                           HttpServletResponse response) throws IOException {
         try {
-            if (!dto.isValid())
-                throw new InvalidRequestException("Invalid request body.");
             tweetService.likeTweet(dto, id);
-        } catch (InvalidRequestException e) {
-            response.sendError(e.STATUS_CODE, e.responseMessage);
         } catch (InvalidCredentialsException e) {
             response.sendError(e.STATUS_CODE, e.responseMessage);
         } catch (NotExistsException e) {
@@ -107,14 +93,10 @@ public class TweetsController {
     }
 
     @PostMapping("/{id}/reply")
-    public void replyTweet(@RequestBody ContentCredentialsDTO dto, @PathVariable Integer id,
+    public void replyTweet(@Valid @RequestBody ContentCredentialsDTO dto, @PathVariable Integer id,
                            HttpServletResponse response) throws IOException {
         try {
-            if (!dto.isValid())
-                throw new InvalidRequestException("Invalid request body.");
             tweetService.replyTweet(dto, id);
-        } catch (InvalidRequestException e) {
-            response.sendError(e.STATUS_CODE, e.responseMessage);
         } catch (InvalidCredentialsException e) {
             response.sendError(e.STATUS_CODE, e.responseMessage);
         } catch (NotExistsException e) {
@@ -124,14 +106,10 @@ public class TweetsController {
     }
 
     @PostMapping("/{id}/repost")
-    public void repostTweet(@RequestBody CredentialsDTO dto, @PathVariable Integer id,
+    public void repostTweet(@Valid @RequestBody CredentialsDTO dto, @PathVariable Integer id,
                             HttpServletResponse response) throws IOException {
         try {
-            if (!dto.isValid())
-                throw new InvalidRequestException("Invalid request body.");
             tweetService.repostTweet(dto, id);
-        } catch (InvalidRequestException e) {
-            response.sendError(e.STATUS_CODE, e.responseMessage);
         } catch (InvalidCredentialsException e) {
             response.sendError(e.STATUS_CODE, e.responseMessage);
         } catch (NotExistsException e) {

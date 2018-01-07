@@ -64,33 +64,33 @@ public class TweetDTO {
         this.repostOf = repostOf;
     }
 
-    public boolean isValidSimple() {
-        return id != null &&
-                author != null && author.isValid() &&
-                posted != null &&
-                content != null;
-    }
-
-    public boolean isValidRepost() {
-        return id != null &&
-                author != null && author.isValid() &&
-                posted != null &&
-                repostOf != null; // &&
-//                        (repostOf.isValidSimple() ||
-//                            repostOf.isValidReply() ||
-//                            repostOf.isValidRepost());
-    }
-
-    public boolean isValidReply() {
-        return id != null &&
-                author != null && author.isValid() &&
-                posted != null &&
-                content != null &&
-                inReplyTo != null; // &&
-//                        (inReplyTo.isValidSimple() ||
-//                            inReplyTo.isValidReply() ||
-//                            inReplyTo.isValidRepost());
-    }
+//    public boolean isValidSimple() {
+//        return id != null &&
+//                author != null && author.isValid() &&
+//                posted != null &&
+//                content != null;
+//    }
+//
+//    public boolean isValidRepost() {
+//        return id != null &&
+//                author != null && author.isValid() &&
+//                posted != null &&
+//                repostOf != null; // &&
+////                        (repostOf.isValidSimple() ||
+////                            repostOf.isValidReply() ||
+////                            repostOf.isValidRepost());
+//    }
+//
+//    public boolean isValidReply() {
+//        return id != null &&
+//                author != null && author.isValid() &&
+//                posted != null &&
+//                content != null &&
+//                inReplyTo != null; // &&
+////                        (inReplyTo.isValidSimple() ||
+////                            inReplyTo.isValidReply() ||
+////                            inReplyTo.isValidRepost());
+//    }
 
 
 }

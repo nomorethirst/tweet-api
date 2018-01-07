@@ -126,12 +126,6 @@ public class User {
         return mentions == null;
     }
 
-    public boolean isValid() {
-        return username != null &&
-                profile != null && profile.isValid() &&
-                joined != null;
-    }
-
     @Override
     public int hashCode() {
         final int prime = 31;

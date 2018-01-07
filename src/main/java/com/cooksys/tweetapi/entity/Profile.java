@@ -1,6 +1,7 @@
 package com.cooksys.tweetapi.entity;
 
 import javax.persistence.Embeddable;
+import javax.validation.constraints.NotNull;
 
 @Embeddable
 public class Profile {
@@ -9,6 +10,7 @@ public class Profile {
 
     private String lastName;
 
+    @NotNull
     private String email;
 
     private String phone;
@@ -75,9 +77,9 @@ public class Profile {
             this.phone = that.getPhone();
     }
 
-    public boolean isValid() {
-        return email != null;
-    }
+//    public boolean isValid() {
+//        return email != null;
+//    }
 
     @Override
     public int hashCode() {

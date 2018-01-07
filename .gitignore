@@ -25,3 +25,6 @@ nbdist/
 
 ### Auto-generated for viewing ###
 .README.md.html
+
+### MacOS ###
+.DS_Store

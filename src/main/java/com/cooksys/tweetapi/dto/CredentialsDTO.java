@@ -1,9 +1,14 @@
 package com.cooksys.tweetapi.dto;
 
+import javax.validation.Valid;
+import javax.validation.constraints.NotNull;
+
 import com.cooksys.tweetapi.entity.Credentials;
 
 public class CredentialsDTO {
 
+    @NotNull
+    @Valid
     private Credentials credentials;
 
     public CredentialsDTO() {
@@ -19,10 +24,6 @@ public class CredentialsDTO {
 
     public void setCredentials(Credentials credentials) {
         this.credentials = credentials;
-    }
-
-    public boolean isValid() {
-        return credentials != null && credentials.isValid();
     }
 
 }

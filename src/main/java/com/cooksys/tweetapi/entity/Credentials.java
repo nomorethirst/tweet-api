@@ -1,14 +1,23 @@
 package com.cooksys.tweetapi.entity;
 
+import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
+import javax.validation.constraints.NotNull;
 
 @Entity
 public class Credentials {
 
     @Id
+    @GeneratedValue
+    private Integer id;
+    
+    @Column(unique=true)
+    @NotNull
     private String username;
 
+    @NotNull
     private String password;
 
     public Credentials() {
@@ -30,17 +39,17 @@ public class Credentials {
         this.password = password;
     }
 
-    public boolean usernameIsNull() {
-        return this.username == null;
-    }
-
-    public boolean passwordIsNull() {
-        return this.password == null;
-    }
-
-    public boolean isValid() {
-        return username != null && password != null;
-    }
+//    public boolean usernameIsNull() {
+//        return this.username == null;
+//    }
+//
+//    public boolean passwordIsNull() {
+//        return this.password == null;
+//    }
+//
+//    public boolean isValid() {
+//        return username != null && password != null;
+//    }
 
     @Override
     public int hashCode() {

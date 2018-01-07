@@ -2,12 +2,16 @@ package com.cooksys.tweetapi.dto;
 
 import java.sql.Timestamp;
 
+import javax.validation.constraints.NotNull;
+
 import com.cooksys.tweetapi.entity.Profile;
 
 public class UserDTO {
 
+    @NotNull
     private String username;
 
+    @NotNull
     private Profile profile;
 
     private Timestamp joined;
@@ -35,12 +39,5 @@ public class UserDTO {
     public void setJoined(Timestamp joined) {
         this.joined = joined;
     }
-
-    public boolean isValid() {
-        return username != null &&
-                profile != null && profile.isValid() &&
-                joined != null;
-    }
-
 
 }

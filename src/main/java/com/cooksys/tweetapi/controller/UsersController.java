@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.util.List;
 
 import javax.servlet.http.HttpServletResponse;
+import javax.validation.Valid;
 
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -21,7 +22,6 @@ import com.cooksys.tweetapi.dto.UserDTO;
 import com.cooksys.tweetapi.exceptions.AlreadyExistsException;
 import com.cooksys.tweetapi.exceptions.AlreadyFollowingException;
 import com.cooksys.tweetapi.exceptions.InvalidCredentialsException;
-import com.cooksys.tweetapi.exceptions.InvalidRequestException;
 import com.cooksys.tweetapi.exceptions.NotExistsException;
 import com.cooksys.tweetapi.service.UserService;
 
@@ -41,15 +41,10 @@ public class UsersController {
     }
 
     @PostMapping
-    public UserDTO createUser(@RequestBody CredentialsProfileDTO dto, HttpServletResponse response) throws IOException {
+    public UserDTO createUser(@Valid @RequestBody CredentialsProfileDTO dto, HttpServletResponse response) throws IOException {
         try {
-            if (!dto.isValid())
-                throw new InvalidRequestException("Invalid request body.");
             return userService.createUser(dto);
         } catch (AlreadyExistsException e) {
-            response.sendError(e.STATUS_CODE, e.responseMessage);
-            return null;
-        } catch (InvalidRequestException e) {
             response.sendError(e.STATUS_CODE, e.responseMessage);
             return null;
         }
@@ -66,16 +61,11 @@ public class UsersController {
     }
 
     @PatchMapping("/@{username}")
-    public UserDTO patchUser(@RequestBody CredentialsProfileDTO dto, @PathVariable String username,
+    public UserDTO patchUser(@Valid @RequestBody CredentialsProfileDTO dto, @PathVariable String username,
                              HttpServletResponse response) throws IOException {
         try {
-            if (!dto.isValid())
-                throw new InvalidRequestException("Invalid request body.");
             return userService.patchUser(dto, username);
         } catch (NotExistsException e) {
-            response.sendError(e.STATUS_CODE, e.responseMessage);
-            return null;
-        } catch (InvalidRequestException e) {
             response.sendError(e.STATUS_CODE, e.responseMessage);
             return null;
         } catch (InvalidCredentialsException e) {
@@ -85,16 +75,11 @@ public class UsersController {
     }
 
     @DeleteMapping(value = "/@{username}")
-    public UserDTO deleteUser(@RequestBody CredentialsDTO credentialsDto, @PathVariable String username,
+    public UserDTO deleteUser(@Valid @RequestBody CredentialsDTO credentialsDto, @PathVariable String username,
                               HttpServletResponse response) throws IOException {
         try {
-            if (!credentialsDto.isValid())
-                throw new InvalidRequestException("Invalid request body.");
             return userService.deleteUser(credentialsDto.getCredentials(), username);
         } catch (NotExistsException e) {
-            response.sendError(e.STATUS_CODE, e.responseMessage);
-            return null;
-        } catch (InvalidRequestException e) {
             response.sendError(e.STATUS_CODE, e.responseMessage);
             return null;
         } catch (InvalidCredentialsException e) {
@@ -104,17 +89,13 @@ public class UsersController {
     }
 
     @PostMapping("/@{username}/follow")
-    public void followUser(@RequestBody CredentialsDTO credentialsDto, @PathVariable String username,
+    public void followUser(@Valid @RequestBody CredentialsDTO credentialsDto, @PathVariable String username,
                            HttpServletResponse response) throws IOException {
         try {
-            if (!credentialsDto.isValid())
-                throw new InvalidRequestException("Invalid request body.");
             userService.followUser(credentialsDto.getCredentials(), username);
         } catch (NotExistsException e) {
             response.sendError(e.STATUS_CODE, e.responseMessage);
         } catch (AlreadyFollowingException e) {
-            response.sendError(e.STATUS_CODE, e.responseMessage);
-        } catch (InvalidRequestException e) {
             response.sendError(e.STATUS_CODE, e.responseMessage);
         } catch (InvalidCredentialsException e) {
             response.sendError(e.STATUS_CODE, e.responseMessage);
@@ -123,19 +104,15 @@ public class UsersController {
     }
 
     @PostMapping("/@{username}/unfollow")
-    public void unFollowUser(@RequestBody CredentialsDTO credentialsDto, @PathVariable String username,
+    public void unFollowUser(@Valid @RequestBody CredentialsDTO credentialsDto, @PathVariable String username,
                              HttpServletResponse response) throws IOException {
         try {
-            if (!credentialsDto.isValid())
-                throw new InvalidRequestException("Invalid request body.");
             userService.unFollowUser(credentialsDto.getCredentials(), username);
         } catch (InvalidCredentialsException e) {
             response.sendError(e.STATUS_CODE, e.responseMessage);
         } catch (NotExistsException e) {
             response.sendError(e.STATUS_CODE, e.responseMessage);
         } catch (AlreadyFollowingException e) {
-            response.sendError(e.STATUS_CODE, e.responseMessage);
-        } catch (InvalidRequestException e) {
             response.sendError(e.STATUS_CODE, e.responseMessage);
         }
 

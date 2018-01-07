@@ -16,6 +16,7 @@ public class CredentialsService {
     }
 
     public void createCredentials(Credentials credentials) {
+	//TODO: check username exists
         credentialsRepository.save(credentials);
     }
 

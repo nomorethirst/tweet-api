@@ -24,10 +24,4 @@ public class ContentCredentialsDTO {
         this.content = content;
     }
 
-    public boolean isValid() {
-        return credentials != null &&
-                credentials.isValid() &&
-                content != null;
-    }
-
 }
